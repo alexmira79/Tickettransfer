@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Events</title>
+
+ <style>
+  .spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite; /* slow spin */
+}
+
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Tab Content Default Hidden */
+  .tab-content {
+    display: none;
+    padding: 16px;
+    background: white;
+  }
+
+  /* Spinner inside My Events tab */
+  #myEventSpinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 40px 0;
+  }
+
+  #myEventSpinner .text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+  }
+
+
+  .animate-slide-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .animate-slide-up.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+</style>
+
+
+</head>
+<body style="margin:0; background:#f6f6f6; font-family:-apple-system, BlinkMacSystemFont, sans-serif;">
+
+  <!-- 🔷 Top Bar -->
+  <div style="background:#1c1c1e; color:white; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; position:relative;">
+    <div style="width:50px;"></div>
+    <div style="position:absolute; left:50%; transform:translateX(-50%); display:flex; align-items:center; font-size:16px; font-weight:600;">
+      My Events
+      <img src="https://flagcdn.com/us.svg" alt="Flag" style="width:16px; height:16px; border-radius:50%; margin-left:6px;" />
+    </div>
+    <div style="font-size:14px;">Help</div>
+  </div>
+
+<!-- ⏳ Loading Spinner -->
+  <div id="loadingIndicator" style="display:none; text-align:center; padding:40px 0;">
+    <div class="spinner" style="margin:0 auto;"></div>
+    <div style="margin-top:10px; font-size:14px; color:#555;">Loading your events...</div>
+  </div>
+
+  
+
+<!-- 📅 MY EVENTS TAB CONTENT -->
+<div id="tab-myevent" class="tab-content" style="padding:0; background:white;">
+  
+  <!-- 🔵 Upcoming Header + Event (initially hidden) -->
+<div id="myEventContent" class="animate-slide-up" style="display:none;">
+    <div style="display:flex; justify-content:space-around; background:#0056ff; color:white; font-weight:500;">
+      <div style="padding:12px 0; flex:1; text-align:center; border-bottom:3px solid white;">UPCOMING (1)</div>
+      <div style="padding:12px 0; flex:1; text-align:center; opacity:0.6;">PAST (0)</div>
+    </div>
+
+    <!-- 📅 Event Card -->
+<div style="padding:16px;">
+  <a href="TicketMaster.html" style="text-decoration:none; color:inherit; display:block;">
+    <div style="position:relative; width:100%; height:220px; overflow:hidden;">
+      <img src="ticketpic.png" alt="Event" style="width:100%; height:100%; object-fit:cover; display:block;" />
+      <div style="position:absolute; bottom:0; left:0; right:0; padding:16px 14px 12px; background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.05)); color:white;">
+        <div style="font-size:16px; font-weight:600; margin-bottom:4px;">Dua Lipa – Radical Optimism Tour</div>
+        <div style="font-size:14px; opacity:0.9;">Sun, Oct 5, 7:30pm • Kia Forum</div>
+        <div style="font-size:13px; margin-top:6px; display:flex; align-items:center;">
+          <img src="ticket.png" alt="Ticket" style="width:14px; height:14px; margin-right:6px;" />
+          2 tickets
+        </div>
+      </div>
+    </div>
+  </a>
+</div>
+</div>
+</div>
+
+
+
+
+<!-- ❌ EMPTY TABS -->
+<div id="tab-discover" class="tab-content" style="display:none; padding:16px;">No content yet for Discover.</div>
+<div id="tab-favorite" class="tab-content" style="display:none; padding:16px;">No content yet for Favourites.</div>
+<div id="tab-sell" class="tab-content" style="display:none; padding:16px;">No content yet for Sell.</div>
+<div id="tab-myaccount" class="tab-content" style="display:none; padding:16px;">No content yet for My Account.</div>
+
+  <!-- 🔻 Bottom Navigation -->
+  <div id="bottomNav" style="position:fixed; bottom:0; left:0; right:0; background:white; display:flex; justify-content:space-around; padding:10px 0 6px; border-top:1px solid #ddd;">
+    <div class="nav-item" data-id="discover" style="display:flex; flex-direction:column; align-items:center; font-size:12px; color:#888;">
+      <img id="icon-discover" src="discover.png" style="width:24px; height:24px;" />
+      Discover
+    </div>
+    <div class="nav-item" data-id="favorite" style="display:flex; flex-direction:column; align-items:center; font-size:12px; color:#888;">
+      <img id="icon-favorite" src="favorite.png" style="width:24px; height:24px;" />
+      Favourites
+    </div>
+    <div class="nav-item" data-id="myevent" style="display:flex; flex-direction:column; align-items:center; font-size:12px; color:#0056ff; font-weight:500;">
+      <img id="icon-myevent" src="myevent.png" style="width:24px; height:24px;" />
+      My Events
+    </div>
+    <div class="nav-item" data-id="sell" style="display:flex; flex-direction:column; align-items:center; font-size:12px; color:#888;">
+      <img id="icon-sell" src="sell.png" style="width:24px; height:24px;" />
+      Sell
+    </div>
+    <div class="nav-item" data-id="myaccount" style="display:flex; flex-direction:column; align-items:center; font-size:12px; color:#888;">
+      <img id="icon-myaccount" src="myaccount.png" style="width:24px; height:24px;" />
+      My Account
+    </div>
+  </div>
+
+<!-- 🔁 Switch Active Tab Logic -->
+<script>
+  const iconMap = {
+    discover: ["discover.png", "discoverblue.png"],
+    favorite: ["favorite.png", "favoriteblue.png"],
+    myevent: ["myevent.png", "myeventblue.png"],
+    sell: ["sell.png", "sellblue.png"],
+    myaccount: ["myaccount.png", "myaccountblue.png"]
+  };
+
+  const navItems = document.querySelectorAll(".nav-item");
+
+  function showTab(tabId) {
+    const allTabs = document.querySelectorAll('.tab-content');
+    const loading = document.getElementById('loadingIndicator');
+    const myEventTab = document.getElementById('tab-myevent');
+    const myEventContent = document.getElementById('myEventContent');
+
+    // Hide all tab content and spinner
+    allTabs.forEach(tab => tab.style.display = 'none');
+    if (loading) loading.style.display = 'none';
+
+    // Reset animation class in case we're coming back
+    if (myEventContent) {
+      myEventContent.style.display = 'none';
+      myEventContent.classList.remove('show');
+    }
+
+    if (tabId === 'myevent') {
+      if (loading) loading.style.display = 'block';
+
+      setTimeout(() => {
+        if (loading) loading.style.display = 'none';
+        if (myEventTab) myEventTab.style.display = 'block';
+
+        if (myEventContent) {
+          myEventContent.style.display = 'block';
+
+          // Allow CSS transition to kick in
+          setTimeout(() => {
+            myEventContent.classList.add('show');
+          }, 50);
+        }
+      }, 800);
+    } else {
+      const otherTab = document.getElementById(`tab-${tabId}`);
+      if (otherTab) otherTab.style.display = 'block';
+    }
+  }
+
+  navItems.forEach(item => {
+    item.addEventListener("click", () => {
+      const selectedId = item.getAttribute("data-id");
+
+      // Update icon colors
+      navItems.forEach(nav => {
+        const id = nav.getAttribute("data-id");
+        const img = document.getElementById(`icon-${id}`);
+        const [gray, blue] = iconMap[id];
+
+        if (id === selectedId) {
+          nav.style.color = "#0056ff";
+          nav.style.fontWeight = "500";
+          if (img) img.src = blue;
+        } else {
+          nav.style.color = "#888";
+          nav.style.fontWeight = "400";
+          if (img) img.src = gray;
+        }
+      });
+
+      // Load the correct tab
+      showTab(selectedId);
+    });
+  });
+
+  // Load My Events by default on first load
+  showTab("myevent");
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ticket Transfer — Oops</title>
+  <style>
+    :root{
+      --blue:#0a66c2;
+      --blue-dark:#0e63b8;
+      --blue-light:#4aa3ff;
+      --bg:#f8f9fa;
+      --text:#1a1a1a;
+      --muted:#666;
+      --light-gray:#e8eaed;
+      --max-width:480px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:24px 16px;
+      line-height:1.6;
+    }
+    .page{
+      width:100%;
+      max-width:var(--max-width);
+      background:white;
+      border-radius:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.08);
+      overflow:hidden;
+    }
+    /* header banner */
+    .banner{
+      background:linear-gradient(135deg,var(--blue-dark) 0%, var(--blue) 100%);
+      color:#fff;
+      padding:24px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .brand{font-weight:700;font-size:24px;letter-spacing:0.3px}
+
+    .content{
+      padding:40px 32px;
+      text-align:center;
+    }
+    .title{
+      font-size:28px;
+      margin:0 0 16px;
+      font-weight:700;
+      color:var(--text);
+    }
+    .message{
+      margin:0 auto 40px;
+      max-width:580px;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.6;
+      /* multi-line truncation compatibility */
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      -webkit-line-clamp:3; /* WebKit */
+      line-clamp:3;         /* standard property */
+    }
+
+    .illustration{
+      width:100%;
+      height:300px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:24px 0;
+    }
+    svg{max-width:85%;height:auto;}
+
+    /* footer spacing for mobile */
+    @media (max-width:480px){
+      .title{font-size:24px}
+      .message{font-size:15px}
+      .illustration{height:240px}
+      .content{padding:32px 24px}
+    }
+
+    /* basic styles for loading/result elements */
+    .progress{
+      height:6px;
+      background:var(--light-gray);
+      border-radius:8px;
+      overflow:hidden;
+      margin:16px auto;
+      width:100%;
+      max-width:100%;
+    }
+    .progress-bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--blue-light),var(--blue));
+      transition:width 0.4s ease;
+    }
+    .wait-time{color:var(--muted); margin-top:12px; font-size:14px;}
+    
+    .fee-card{
+      display:inline-block;
+      border-radius:12px;
+      padding:24px 28px;
+      background:linear-gradient(135deg,#f0f7ff 0%,#e8f2ff 100%);
+      margin:24px 0;
+      text-align:center;
+      border:1px solid #d4e8ff;
+      box-shadow:0 4px 12px rgba(10,102,194,0.06);
+    }
+    .fee-amount{font-size:32px;font-weight:700;color:var(--blue-dark); margin-bottom:8px;}
+    .fee-desc{font-size:14px;color:var(--muted); font-weight:500;}
+    
+    .fee-note{color:var(--text);font-size:14px;margin-top:20px;max-width:100%;margin-left:auto;margin-right:auto;text-align:left; background:#f8f9fa; padding:16px; border-radius:8px;}
+    .fee-note p{margin:8px 0; line-height:1.6;}
+    .fee-note p:first-child{margin-top:0}
+    .fee-note strong{display:block;margin-bottom:8px; color:var(--text); font-weight:600;}
+    .fee-note a{color:var(--blue); text-decoration:none; font-weight:600;}
+    .fee-note a:hover{text-decoration:underline}
+    
+    .actions{display:flex;gap:12px;justify-content:center;margin-top:28px; flex-direction:column;}
+    .btn{padding:14px 20px;border-radius:8px;border:0;cursor:pointer;text-decoration:none;display:inline-block; font-weight:600; font-size:15px; transition:all 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+    .btn:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.12);}
+    .btn:active{transform:translateY(0)}
+    .btn-primary{background:var(--blue);color:#fff;}
+    .btn-primary:hover{background:var(--blue-dark)}
+    .btn-ghost{background:transparent;border:1px solid var(--light-gray);color:var(--text);padding:13px 19px;}
+    .btn-ghost:hover{background:#f8f9fa; border-color:#ccc;}
+    .btn-success{background:#2ecc71;color:#fff;}
+    
+    /* modal / toast */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:60; backdrop-filter:blur(2px);}
+    .dialog{background:#fff;border-radius:12px;padding:32px;max-width:440px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,0.16);text-align:left; animation:slideUp 0.3s ease;}
+    .dialog h3{margin:0 0 12px;font-size:20px; font-weight:700; color:var(--text);}
+    .dialog p{margin:0 0 20px;color:var(--muted); line-height:1.6;}
+    .dialog .dialog-actions{display:flex;gap:12px;justify-content:flex-end}
+
+    @keyframes slideUp{
+      from{transform:translateY(16px); opacity:0}
+      to{transform:translateY(0); opacity:1}
+    }
+
+    @keyframes spin{
+      from{transform:rotate(0deg)}
+      to{transform:rotate(360deg)}
+    }
+
+    /* Status banner */
+    .status-banner{background:#f0f7ff; border-left:4px solid var(--blue); padding:12px 16px; margin-bottom:16px; border-radius:4px; font-size:13px; color:var(--text)}
+    .status-badge{display:inline-block; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:600; margin-right:8px}
+    .badge-pending{background:#fff3cd; color:#856404}
+    .badge-processing{background:#cfe2ff; color:#084298}
+    .badge-failed{background:#f8d7da; color:#842029}
+    .badge-confirmed{background:#d1e7dd; color:#0f5132}
+
+    /* Step indicator removed — using single micro-status line for updates */
+
+    /* Transaction ID */
+    .transaction-id{background:var(--light-gray); padding:8px 12px; border-radius:6px; font-family:monospace; font-size:12px; color:var(--muted); word-break:break-all; margin:12px 0}
+
+    /* Loading section styling */
+    #loading{
+      text-align:center;
+      margin:20px 0 40px 0;
+      animation:fadeIn 0.5s ease-out;
+    }
+    #loading .message{
+      margin:0 auto 16px;
+      font-size:16px;
+      color:var(--muted);
+    }
+    #loading .progress{
+      margin:12px auto 20px;
+      width:100%;
+      max-width:280px;
+    }
+    #loading .wait-time{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin:8px 0 0;
+    }
+
+    .micro-status{font-size:14px;color:var(--muted);margin-top:10px}
+
+    @keyframes fadeIn{
+      from{opacity:0}
+      to{opacity:1}
+    }
+
+    /* Animated dots removed to restore original behavior */
+
+    /* Security badge */
+    .security-badge{display:inline-flex; align-items:center; gap:4px; color:var(--blue); font-size:12px; font-weight:600}
+    .security-badge:before{content:"🔒"}
+
+    /* Spinner */
+    .spinner{display:inline-block; width:16px; height:16px; border:2px solid var(--light-gray); border-top:2px solid var(--blue); border-radius:50%; animation:spin 0.8s linear infinite; vertical-align:middle; margin-right:6px}
+
+    /* FAQ section */
+    .faq-section{background:#f8f9fa; padding:16px; border-radius:8px; margin-top:24px; text-align:left}
+    .faq-title{font-weight:700; font-size:14px; margin-bottom:12px; color:var(--text)}
+    .faq-item{margin-bottom:10px; font-size:13px}
+    .faq-q{font-weight:600; color:var(--text); margin-bottom:4px}
+    .faq-a{color:var(--muted); line-height:1.5}
+
+    /* Retry cooldown */
+    .retry-cooldown{font-size:13px; color:var(--muted); margin-top:8px}
+
+    @media (prefers-reduced-motion:reduce){
+      .progress-bar{transition:none}
+      #flagPath{animation:none}
+      .btn{transition:none}
+      .dialog{animation:none}
+      .spinner{animation:none}
+    }
+  </style>
+</head>
+<body>
+  <main class="page" role="main">
+    <header class="banner">
+      <div class="brand">ticketmaster</div>
+    </header>
+    <section class="content">
+      <!-- 40s Loading Timer -->
+      <div id="loading" aria-live="polite">
+        <p class="message" id="loading-message">Please wait — confirming your ticket<span id="dots">...</span></p>
+        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="40" aria-valuenow="0">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p class="wait-time">Estimated wait: <span id="time-left">40</span>s</p>
+        <div class="micro-status" id="micro-status">Accepting transfer — preparing to verify</div>
+      </div>
+
+      <div id="result">
+        <p class="message">We've located a fee associated with this transfer.</p>
+        <div class="fee-card">
+          <div class="fee-amount" id="fee-amount">$40.00</div>
+          <div class="fee-desc">Name change fee — pending security review</div>
+        </div>
+        <div class="fee-note" id="fee-note">
+          <p><strong>This ticket transfer is pending due to a $40.00 name-change fee.</strong></p>
+          <p>Per platform policy, the recipient bears the cost, while the original sender must complete the fee clearance to authorize the transfer.</p>
+          <p>Once clearance is confirmed, the ticket will be released automatically.</p>
+          <p style="margin-top:8px;color:var(--muted)">If you need assistance, contact support: <a class="support-link" href="mailto:support@ticketmaster.com">support@ticketmaster.com</a>.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="contact-btn" type="button">Contact sender</button>
+          <button class="btn btn-primary" id="confirm-btn">Confirm once fee is cleared</button>
+        </div>
+        <div class="retry-cooldown" id="cooldown-message" style="display:none"></div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+          <div class="faq-title">❓ Common questions</div>
+          <div class="faq-item">
+            <div class="faq-q">Why is there a fee?</div>
+            <div class="faq-a">Name changes on tickets require additional verification and security checks per our platform policy.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Who pays the fee?</div>
+            <div class="faq-a">The ticket recipient bears the cost. The original sender must verify and approve the transfer.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">How long does this take?</div>
+            <div class="faq-a">Once the sender accepts, you can complete payment immediately. The ticket will be released within minutes.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Is this secure?</div>
+            <div class="faq-a"><span class="security-badge"></span> All transfers are encrypted and verified. Your payment is protected.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="illustration" aria-hidden="true">
+        <!-- Simplified inline SVG inspired by the screenshot -->
+        <svg viewBox="0 0 600 420" xmlns="http://www.w3.org/2000/svg" role="img">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#e6f2f5"/>
+              <stop offset="1" stop-color="#d1e9ee"/>
+            </linearGradient>
+          </defs>
+          <!-- mountains -->
+          <polygon points="20,380 300,60 580,380" fill="#dbe1de" />
+          <polygon points="220,380 420,120 580,380" fill="url(#g1)" />
+          <!-- flag pole -->
+          <rect x="288" y="120" width="12" height="170" rx="6" fill="#7f561a" />
+          <path d="M300 130c30-60 70 0 110-10 0 60-80 50-110 150z" fill="#c0392b" transform="translate(-40,0)"/>
+          <!-- penguin (simple) -->
+          <ellipse cx="120" cy="300" rx="36" ry="54" fill="#f6e3c9" />
+          <path d="M96 270c10-20 40-20 46 0v40c-12 10-34 10-46 0z" fill="#244654" />
+          <circle cx="115" cy="275" r="4" fill="#fff" />
+          <!-- small cloud shape -->
+          <rect x="340" y="260" rx="10" ry="10" width="80" height="22" fill="#fff" />
+        </svg>
+      </div>
+      <!-- Modal overlay for messages (replaces alert()) -->
+      <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="dialog" role="document">
+          <h3 id="dialog-title">Message</h3>
+          <p id="dialog-body">...</p>
+          <div class="dialog-actions">
+            <button id="dialog-copy" class="btn btn-primary" style="display:none">Copy message</button>
+            <button id="dialog-close" class="btn btn-ghost">Close</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    (function(){
+      // Configurable via URL params: ?fee=5.00&sender=foo%40example.com&wait=40
+      const params = new URLSearchParams(location.search);
+      const fee = params.get('fee') || '40.00';
+      const sender = params.get('sender') || '';
+      const recipient = params.get('recipient') || '';
+      const paymentStatus = params.get('status') || 'unpaid';
+      const wait = parseInt(params.get('wait')||'40',10) || 40;
+      console.log('Payment status:', paymentStatus);
+
+      // transaction ID removed (element not present in this layout)
+
+      const loading = document.getElementById('loading');
+      const result = document.getElementById('result');
+      const feeAmount = document.getElementById('fee-amount');
+      const contactBtn = document.getElementById('contact-btn');
+      const confirmBtn = document.getElementById('confirm-btn');
+      const timeLeft = document.getElementById('time-left');
+      const progressBar = document.getElementById('progress-bar');
+      const dots = document.getElementById('dots');
+      const microStatusEl = document.getElementById('micro-status');
+
+      feeAmount.textContent = '$' + fee;
+
+      // Contact button: open a message dialog (no mailto). Shows template including sender if available.
+      const overlay = document.getElementById('overlay');
+      const dialogTitle = document.getElementById('dialog-title');
+      const dialogBody = document.getElementById('dialog-body');
+      const dialogClose = document.getElementById('dialog-close');
+      const dialogCopy = document.getElementById('dialog-copy');
+
+      function showDialog(title, body, opts){
+        dialogTitle.textContent = title;
+        dialogBody.textContent = body;
+        if(opts && opts.copyable){ dialogCopy.style.display = ''; dialogCopy.disabled = false; } else { dialogCopy.style.display = 'none'; }
+        overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden','false');
+        dialogClose.focus();
+      }
+      function hideDialog(){
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden','true');
+      }
+      dialogClose.addEventListener('click', hideDialog);
+      overlay.addEventListener('click', function(e){ if(e.target===overlay) hideDialog(); });
+
+      // wire copy button in dialog
+      dialogCopy.addEventListener('click', function(){
+        const text = dialogBody.textContent || '';
+        navigator.clipboard?.writeText(text).then(()=>{
+          const prev = dialogCopy.textContent;
+          dialogCopy.textContent = 'Copied';
+          dialogCopy.disabled = true;
+          setTimeout(()=>{ dialogCopy.textContent = prev; dialogCopy.disabled = false; }, 1600);
+        }).catch(()=>{
+          showDialog('Copy failed', 'Unable to copy automatically. Please select and copy the message manually.');
+        });
+      });
+
+      // contact button opens dialog with prefilled message (not a mailto link)
+      contactBtn.addEventListener('click', function(e){
+        const feeText = '$' + fee;
+        let body = '';
+        let title = 'Contact the sender';
+        if(sender){
+          title = `Message to ${sender}`;
+          if(recipient){
+            body = `Hi ${sender},\n\nI (${recipient}) was charged ${feeText} for name changes on this ticket. I am prepared to pay this fee, but I need you to accept the transfer from your account first so I can complete payment. Please accept the transfer or confirm any required steps so I may proceed and the ticket can be released. Thank you.\n\n— ${recipient}`;
+          } else {
+            body = `Hi ${sender},\n\nI was charged ${feeText} for name changes on this ticket. I am prepared to pay this fee, but I need you to accept the transfer from your account first so I can complete payment. Please accept the transfer or confirm any required steps so I may proceed and the ticket can be released. Thank you.`;
+          }
+        } else {
+          title = 'Contact the sender';
+          if(recipient){
+            body = `Hi,\n\nI (${recipient}) was charged ${feeText} for name changes on this ticket. Please contact the ticket sender and ask them to accept the transfer so I can complete the required payment. Once the sender accepts, I will finalise payment and the ticket will be released.\n\n— ${recipient}`;
+          } else {
+            body = `Hi,\n\nA charge of ${feeText} has been applied for name changes on this ticket. Please contact the ticket sender and ask them to accept the transfer so the payer can complete the required payment. Once accepted and paid, the ticket will be released.`;
+          }
+        }
+        showDialog(title, body, {copyable: true});
+      });
+
+      // Initialize 40s timer
+      let timerInterval = null;
+      let elapsed = 0;
+
+      function startTimer(){
+        elapsed = 0;
+        let currentStep = 0;
+
+        function updateStep(){
+          const ratio = wait > 0 ? (elapsed / wait) : 1;
+          let step = 1;
+          if(ratio < 1/3) step = 1;
+          else if(ratio < 2/3) step = 2;
+          else step = 3;
+          if(step !== currentStep){
+            currentStep = step;
+            if(currentStep === 1) microStatusEl.textContent = 'Accepting transfer — preparing to verify';
+            else if(currentStep === 2) microStatusEl.textContent = 'Verifying account and ticket details';
+            else microStatusEl.textContent = 'Finalising clearance — releasing ticket';
+          }
+        }
+
+        // initial step
+        updateStep();
+
+        timerInterval = setInterval(function(){
+          elapsed++;
+          updateStep();
+          const remaining = Math.max(0, wait - elapsed);
+          timeLeft.textContent = remaining;
+          const percent = (elapsed / wait) * 100;
+          progressBar.style.width = percent + '%';
+
+          if(elapsed >= wait){
+            stopTimer();
+            // Hide loading, show result
+            loading.style.display = 'none';
+            result.style.display = 'block';
+            // clear micro-status after transition
+            try{ microStatusEl.textContent = ''; }catch(e){}
+          }
+        }, 1000);
+      }
+
+      function stopTimer(){
+        if(timerInterval){
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      }
+
+      // Check if fast mode is enabled via URL param
+      const fastMode = params.get('fast') === '1';
+      if(fastMode){
+        // Skip timer, show fee panel immediately
+        loading.style.display = 'none';
+        result.style.display = 'block';
+      } else {
+        // Start timer: show loading, then fee panel after wait time
+        loading.style.display = 'block';
+        result.style.display = 'none';
+        startTimer();
+      }
+
+      // confirm action: check payment status and show success or failure
+      confirmBtn.addEventListener('click', function(){
+        confirmBtn.disabled = true;
+        const spinner = '<span class="spinner"></span>';
+        confirmBtn.innerHTML = spinner + 'Processing...';
+        setTimeout(()=>{
+          if(paymentStatus === 'unpaid'){
+            // Payment not cleared — show failure with retry cooldown
+            confirmBtn.innerHTML = 'Retry';
+            confirmBtn.style.background = '#e74c3c';
+            confirmBtn.disabled = false;
+            
+            // No status banner on loading page; keep user-facing dialog instead
+            
+            // Show cooldown message
+            const cooldownMsg = document.getElementById('cooldown-message');
+            cooldownMsg.style.display = 'block';
+            let countdown = 30;
+            cooldownMsg.textContent = `You can retry in ${countdown}s`;
+            const cooldownTimer = setInterval(()=>{
+              countdown--;
+              if(countdown > 0) cooldownMsg.textContent = `You can retry in ${countdown}s`;
+              else { clearInterval(cooldownTimer); cooldownMsg.style.display = 'none'; confirmBtn.disabled = false; }
+            }, 1000);
+            confirmBtn.disabled = true;
+            
+            showDialog('Payment not verified', 'The sender has not yet accepted and verified the transfer. Please contact them or try again in a moment once they complete their steps.');
+          } else {
+            // Payment cleared — show success
+            confirmBtn.innerHTML = '✓ Confirmed';
+            confirmBtn.classList.add('btn-success');
+            confirmBtn.disabled = true;
+            
+            // No status banner on loading page; rely on dialog for confirmation
+            document.getElementById('cooldown-message').style.display = 'none';
+            
+            showDialog('Transfer confirmed', 'Your transfer has been confirmed. The ticket is now in your account and can be used immediately.');
+          }
+        }, 1200);
+      });
+    })();
+  </script>
+</body>
+</html>
