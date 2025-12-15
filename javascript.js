@@ -336,8 +336,67 @@ function goBack() {
   console.log('Going back...');
 }
 
+// Validate and submit transfer form
+function submitTransferForm() {
+  const firstNameInput = document.getElementById('firstNameInput');
+  const lastNameInput = document.getElementById('lastNameInput');
+  const emailInput = document.getElementById('emailInput');
+  
+  // Validate inputs
+  if (!firstNameInput.value.trim()) {
+    alert('Please enter your first name');
+    firstNameInput.focus();
+    return;
+  }
+  
+  if (!lastNameInput.value.trim()) {
+    alert('Please enter your last name');
+    lastNameInput.focus();
+    return;
+  }
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailInput.value.trim() || !emailRegex.test(emailInput.value)) {
+    alert('Please enter a valid email address');
+    emailInput.focus();
+    return;
+  }
+  
+  // Show success modal
+  showSuccessModal(emailInput.value, selectedSeats.length);
+}
+
+// Show transfer success modal
+function showSuccessModal(email, ticketCount) {
+  const modal = document.getElementById('transferSuccessModal');
+  const countElement = document.getElementById('successTicketCount');
+  const emailElement = document.getElementById('successEmail');
+  
+  countElement.textContent = ticketCount;
+  emailElement.textContent = email;
+  
+  modal.classList.remove('hidden');
+  
+  // Auto-close after 4 seconds
+  setTimeout(() => {
+    closeSuccessModal();
+  }, 4000);
+}
+
+// Close transfer success modal
+function closeSuccessModal() {
+  const modal = document.getElementById('transferSuccessModal');
+  modal.classList.add('hidden');
+  
+  // Reset form and close panels
+  document.getElementById('transferForm').reset();
+  goBackFromManualForm();
+  closeTransfer();
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
+
   updateTicketCount();
   setupCarouselScrollTracking();
   bindInteractiveButtons();
@@ -364,3 +423,4 @@ document.addEventListener('DOMContentLoaded', function() {
     closeTransferBtn.addEventListener('click', closeTransfer);
   }
 });
+
