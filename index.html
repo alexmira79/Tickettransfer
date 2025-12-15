@@ -310,13 +310,25 @@
 
     
 
-    <div class="buttons-row" style="display:flex; gap:12px; justify-content:space-between; margin-top:8px;">
+    <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:8px;">
       <button type="button" onclick="goBackFromManualForm()" class="btn plain">Cancel</button>
-      <button type="button" id="transferSubmitBtn" class="btn primary">Transfer</button>
+      <button type="button" id="transferSubmitBtn" class="btn primary" onclick="submitTransferForm()">Transfer tickets</button>
     </div>
 
     <div id="transferProgress" class="hidden" aria-live="polite"></div>
   </form>
+</div>
+
+<!-- Transfer Success Modal -->
+<div id="transferSuccessModal" class="transfer-success-modal hidden">
+  <div class="transfer-success-content">
+    <button class="success-close-btn" onclick="closeSuccessModal()">✕</button>
+    <div class="success-icon">ℹ</div>
+    <h2 class="success-title">Transfer Successful</h2>
+    <p class="success-message">You have successfully transferred <strong id="successTicketCount">1</strong> ticket to <strong id="successEmail">recipient@example.com</strong></p>
+    <p class="success-sub">The user should receive the tickets within 5 to 10 Minutes</p>
+    <button class="btn success-ok-btn" onclick="closeSuccessModal()">Ok</button>
+  </div>
 </div>
 
 <!-- Admin Panel -->
